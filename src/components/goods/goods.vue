@@ -3,7 +3,7 @@
     <div class="goods">
       <div class="menu-wrapper" ref="menuWrapper">
         <ul>
-          <li class="menu-item"  v-for="item in goods">
+          <li class="menu-item"  v-for="(item,index) in goods" :class="{'current':currentIndex===index}" @click="selectMenu(index)">
           <span class="text border-1px">
           	<span v-show="item.type>0">
           		<iconClass :type="item.type"></iconClass>
@@ -15,21 +15,21 @@
       </div>
       <div class="foods-wrapper" ref="foodsWrapper">
         <ul>
-          <li class="food-list">
-            <h1 class="title"></h1>
+          <li class="food-list" v-for="item in goods" ref="foodList">
+            <h1 class="title">{{item.name}}</h1>
             <ul>
-              <li class="food-item border-1px">
+              <li class="food-item border-1px" v-for="food in item.foods">
                 <div class="icon">
-                  <img width="57" height="57" >
+                  <img width="57" height="57" :src="food.icon">
                 </div>
                 <div class="content">
-                  <h2 class="name"></h2>
-                  <p class="desc"></p>
+                  <h2 class="name">{{food.name}}</h2>
+                  <p class="desc">{{food.description}}</p>
                   <div class="extra">
-                    <span class="count">月售份</span><span>好评率%</span>
+                    <span class="count">月售{{food.sellCount}}份</span><span>好评率{{food.rating}}%</span>
                   </div>
                   <div class="price">
-                    <span class="now">￥</span><span class="old">￥</span>
+                    <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
                     
@@ -46,6 +46,7 @@
 </template>
 <script>
 	import iconClass from 'components/iconClass/iconClass';
+	import BScroll from 'better-scroll';
 	const ERR_OK = 0;
 	export default{
 		props: {
@@ -55,7 +56,9 @@
 	    },
 		data() {
 	      return {
-	        goods: []
+	        goods: [],
+	        listHeight:[],
+	        scrollY:0
 	      };
 	    },
 		created(){
@@ -63,11 +66,57 @@
 				res=res.body;
 				if (res.errno===ERR_OK) {
 					this.goods=res.data;
+					this.$nextTick(() => {
+            this._initScroll();
+            this._calculateHeight();
+          });
 				}
 			})
 		},
 		components:{
 			iconClass
+		},
+		computed:{
+			currentIndex(){
+				for (let i=0;i<this.listHeight.length;i++) {
+					let height1=this.listHeight[i];
+					let height2=this.listHeight[i+1];
+					if (!height2||this.scrollY>=height1&&this.scrollY<height2) {
+						return i;
+					}
+				}
+				return 0;
+			}
+		},
+		methods:{
+			_initScroll() {
+        this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+          click: true
+        });
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+          click: true,
+          probeType:3
+        });
+        
+        this.foodsScroll.on('scroll', (pos) => {
+            this.scrollY = Math.abs(Math.round(pos.y));
+        });
+     },
+     _calculateHeight(){
+     		let foodList=this.$refs.foodList;
+     		let height = 0;
+     		this.listHeight.push(height);
+     		for (let i=0;i<foodList.length;i++) {
+     			let item = foodList[i];
+          height += item.clientHeight;
+          this.listHeight.push(height);
+     		}
+     },
+     selectMenu(index){
+     	let foodList = this.$refs.foodList;
+        let el = foodList[index];
+        this.foodsScroll.scrollToElement(el, 600);
+     }
 		}
 	}
 </script>
