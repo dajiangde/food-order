@@ -40,12 +40,13 @@
           </li>
         </ul>
       </div>
-      
+      <shopcart ref="shopcart" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shopcart>
     </div>
   </div>
 </template>
 <script>
 	import iconClass from 'components/iconClass/iconClass';
+	import shopcart from 'components/shopcart/shopcart';
 	import BScroll from 'better-scroll';
 	const ERR_OK = 0;
 	export default{
@@ -74,7 +75,8 @@
 			})
 		},
 		components:{
-			iconClass
+			iconClass,
+			shopcart
 		},
 		computed:{
 			currentIndex(){
@@ -115,7 +117,7 @@
      selectMenu(index){
      	let foodList = this.$refs.foodList;
         let el = foodList[index];
-        this.foodsScroll.scrollToElement(el, 600);
+        this.foodsScroll.scrollToElement(el, 100);
      }
 		}
 	}
