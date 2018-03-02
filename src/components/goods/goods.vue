@@ -32,7 +32,7 @@
                     <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    
+                    <cartcontrol :food="food"></cartcontrol>
                   </div>
                 </div>
               </li>
@@ -40,13 +40,14 @@
           </li>
         </ul>
       </div>
-      <shopcart ref="shopcart" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shopcart>
+      <shopcart ref="shopcart" :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shopcart>
     </div>
   </div>
 </template>
 <script>
 	import iconClass from 'components/iconClass/iconClass';
 	import shopcart from 'components/shopcart/shopcart';
+	import cartcontrol from 'components/cartcontrol/cartcontrol';
 	import BScroll from 'better-scroll';
 	const ERR_OK = 0;
 	export default{
@@ -76,7 +77,8 @@
 		},
 		components:{
 			iconClass,
-			shopcart
+			shopcart,
+			cartcontrol
 		},
 		computed:{
 			currentIndex(){
@@ -88,6 +90,18 @@
 					}
 				}
 				return 0;
+			},
+			selectFoods(){
+				let foods = [];
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food);
+            }
+          });
+        });
+        console.log(foods)
+        return foods;
 			}
 		},
 		methods:{

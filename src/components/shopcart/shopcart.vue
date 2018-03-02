@@ -4,27 +4,27 @@
       <div class="content">
         <div class="content-left">
           <div class="logo-wrapper">
-            <div class="logo">
-              <i class="icon-shopping_cart"></i>
+            <div class="logo" :class="{'highlight':totalCount>0}">
+              <i class="icon-shopping_cart" :class="{'highlight':totalCount>0}"></i>
             </div>
-            <div class="num"></div>
+            <div class="num" v-show="totalCount>0">{{totalCount}}</div>
           </div>
-          <div class="price">￥{{totalPrice}}</div>
+          <div class="price" :class="{'highlight':totalCount>0}">￥{{totalPrice}}</div>
           <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
         </div>
         <div class="content-right" >
-          <div class="pay" >
-            
+          <div class="pay" :class="payClass">
+            {{payCount}}
           </div>
         </div>
       </div>
-      <div class="ball-container">
+      <!--<div class="ball-container">
         <div>
             <div class="ball">
               <div class="inner inner-hook"></div>
             </div>
         </div>
-      </div>
+      </div>-->
       <!--<transition name="fold">
         <div class="shopcart-list">
           <div class="list-header">
@@ -53,6 +53,11 @@
 </template>
 <script>
 	export default{
+		data(){
+			return {
+				
+			}
+		},
 		props:{
 			deliveryPrice:{
 				type:Number,
@@ -67,9 +72,9 @@
 				default(){
 					return[
 						{
-			              price: 10,
-			              count: 1
-			            }
+			        price: 30,
+			        count: 1
+			      }
 					]
 				}
 			}
@@ -81,6 +86,29 @@
 					total+=food.price*food.count;
 				})
 				return total;
+			},
+			totalCount(){
+				let total=0;
+				this.selectFoods.forEach((food)=>{
+					total+=food.count;
+				})
+				return total;
+			},
+			payCount(){
+				if(this.totalPrice===0){
+					return "￥"+this.minPrice+"元起送"
+				}else if(this.totalPrice<this.minPrice){
+					return "还差￥"+(this.minPrice-this.totalPrice)+"元起送"
+				}else{
+					return "去结算"
+				}
+			},
+			payClass(){
+				if(this.totalPrice<this.minPrice){
+					return "not-enough"
+				}else{
+					return "enough"
+				}
 			}
 		}
 	}
