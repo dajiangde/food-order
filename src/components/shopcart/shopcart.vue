@@ -79,6 +79,11 @@
 				}
 			}
 		},
+		methods:{
+			drop(el){
+				console.log(el);
+			}
+		},
 		computed:{
 			totalPrice(){
 				let total=0;

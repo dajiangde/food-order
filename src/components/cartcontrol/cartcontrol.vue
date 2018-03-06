@@ -25,6 +25,7 @@
 				}else{
 					this.food.count++
 				}
+				this.$emit('add', event.target);
 			},
 			decreaseCart(){
 				if (this.food.count>0) {
