@@ -2,7 +2,7 @@
   <div>
     <div class="shopcart">
       <div class="content">
-        <div class="content-left">
+        <div class="content-left" @click="toggleList">
           <div class="logo-wrapper">
             <div class="logo" :class="{'highlight':totalCount>0}">
               <i class="icon-shopping_cart" :class="{'highlight':totalCount>0}"></i>
@@ -12,7 +12,7 @@
           <div class="price" :class="{'highlight':totalCount>0}">￥{{totalPrice}}</div>
           <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
         </div>
-        <div class="content-right" >
+        <div class="content-right" @click="pay">
           <div class="pay" :class="payClass">
             {{payCount}}
           </div>
@@ -27,33 +27,36 @@
           </transition>
         </div>
       </div>
-      <!--<transition name="fold">
-        <div class="shopcart-list">
+      <transition name="fold">
+        <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
             <h1 class="title">购物车</h1>
-            <span class="empty" >清空</span>
+            <span class="empty" @click="empty">清空</span>
           </div>
           <div class="list-content" ref="listContent">
             <ul>
-              <li class="food">
-                <span class="name"></span>
+              <li class="food" v-for="food in selectFoods">
+                <span class="name">{{food.name}}</span>
                 <div class="price">
-                  <span>￥</span>
+                  <span>￥{{food.price*food.count}}</span>
                 </div>
                 <div class="cartcontrol-wrapper">
+                	<cartcontrol @add="addFood" :food="food"></cartcontrol>
                 </div>
               </li>
             </ul>
           </div>
         </div>
-      </transition>-->
+      </transition>
     </div>
-    <!--<transition name="fade">
-      <div class="list-mask"></div>
-    </transition>-->
+    <transition name="fade">
+      <div class="list-mask" v-show="listShow" @click="toggleList"></div>
+    </transition>
   </div>
 </template>
 <script>
+	import BScroll from 'better-scroll';
+	import cartcontrol from 'components/cartcontrol/cartcontrol';
 	export default{
 		data(){
 			return {
@@ -75,7 +78,11 @@
           }
         ],
         dropBalls: [],
+        show:true,
 			}
+		},
+		components:{
+			cartcontrol
 		},
 		props:{
 			deliveryPrice:{
@@ -99,6 +106,19 @@
 			}
 		},
 		methods:{
+			empty(){
+				this.selectFoods.forEach((food) => {
+          food.count = 0;
+        });
+			},
+			toggleList(){
+				if(this.selectFoods.length>0){
+					this.show=!this.show;
+				}
+			},
+			addFood(target) {
+        this.drop(target);
+      },
 			drop(el){
 				for (let i = 0; i < this.balls.length; i++) {
           let ball = this.balls[i];
@@ -143,6 +163,12 @@
           ball.show = false;
           el.style.display = 'none';
         }
+      },
+      pay() {
+        if (this.totalPrice < this.minPrice) {
+          return;
+        }
+        window.alert(`支付${this.totalPrice}元`);
       }
 		},
 		computed:{
@@ -175,6 +201,25 @@
 				}else{
 					return "enough"
 				}
+			},
+			listShow(){
+				if(this.selectFoods.length===0){
+					this.show=true;
+					return false;
+				}
+				let fold=!this.show;
+				if (fold) {
+          this.$nextTick(() => {
+            if (!this.scroll) {
+              this.scroll = new BScroll(this.$refs.listContent, {
+                click: true
+              });
+            } else {
+              this.scroll.refresh();
+            }
+          });
+        }
+				return fold;
 			}
 		}
 	}
