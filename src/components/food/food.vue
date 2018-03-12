@@ -18,10 +18,10 @@
             <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
           </div>
           <div class="cartcontrol-wrapper">
-           <!-- <cartcontrol @add="addFood" :food="food"></cartcontrol>-->
+             <cartcontrol @add="addFood" :food="food"></cartcontrol>
           </div>
           <transition name="fade">
-            <div class="buy">
+            <div class="buy" v-show="food.count===0||!food.count" @click="addShow">
               加入购物车
             </div>
           </transition>
@@ -31,7 +31,7 @@
           <h1 class="title">商品信息</h1>
           <p class="text">{{food.info}}</p>
         </div>
-       
+       <split></split>
         <div class="rating">
           <h1 class="title">商品评价</h1>
           <!--<ratingselect @select="selectRating" @toggle="toggleContent" :selectType="selectType"
@@ -62,6 +62,7 @@
 	import BScroll from 'better-scroll';
   	import Vue from 'vue';
   	import cartcontrol from 'components/cartcontrol/cartcontrol';
+  	import split from 'components/split/split';
 	export default{
 		props:{
 			food:{
@@ -85,10 +86,18 @@
 			            this.scroll.refresh();
 			          }
 				})
+			},
+			addFood(target) {
+        this.$emit('add', target);
+      },
+			addShow(){
+				this.$emit('add', event.target);
+        Vue.set(this.food, 'count', 1);
 			}
 		},
 		components:{
-			cartcontrol
+			cartcontrol,
+			split
 		}
 	}
 </script>
