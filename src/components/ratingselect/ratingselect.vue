@@ -1,11 +1,11 @@
 <template>
   <div class="ratingselect">
     <div class="rating-type border-1px">
-      <span class="block positive" :class="{'active':selectType===2}">{{desc.all}}<span class="count">{{ratings.length}}</span></span>
-      <span class="block positive" :class="{'active':selectType===0}">{{desc.positive}}<span class="count"></span></span>
-      <span class="block negative" :class="{'active':selectType===1}">{{desc.negative}}<span class="count"></span></span>
+      <span class="block positive" @click="select(2)" :class="{'active':selectType===2}">{{desc.all}}<span class="count">{{ratings.length}}</span></span>
+      <span class="block positive" @click="select(0)" :class="{'active':selectType===0}">{{desc.positive}}<span class="count">{{positives.length}}</span></span>
+      <span class="block negative" @click="select(1)" :class="{'active':selectType===1}">{{desc.negative}}<span class="count">{{negatives.length}}</span></span>
     </div>
-    <div class="switch">
+    <div class="switch" :class="{'on':onlyContent}" @click="toggleContent">
       <span class="icon-check_circle"></span>
       <span class="text">只看有内容的评价</span>
     </div>
@@ -43,6 +43,32 @@
 	        }
 	      }
 	    },
+	    data(){
+	    	return {
+	    		
+	    	}
+	    },
+	    computed: {
+	      positives() {
+	        return this.ratings.filter((rating) => {
+	          return rating.rateType === POSITIVE;
+	        });
+	      },
+	      negatives() {
+	        return this.ratings.filter((rating) => {
+	          return rating.rateType === NEGATIVE;
+	        });
+	      }
+	    },
+	    methods:{
+	    	select(type){
+	    		this.$emit('select', type);
+	    	},
+	    	toggleContent(){
+	    		this.$emit('toggle',!this.onlyContent);
+	    	}
+	    }
+	    
 	}
 </script>
 <style lang="stylus" rel="stylesheet/stylus">

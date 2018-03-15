@@ -34,17 +34,18 @@
        <split></split>
         <div class="rating">
           <h1 class="title">商品评价</h1>
-          <ratingselect :selectType="selectType" :onlyContent="onlyContent" :desc="desc" :ratings="food.ratings"></ratingselect>
+          <ratingselect :selectType="selectType" :onlyContent="onlyContent" :desc="desc" :ratings="food.ratings" @select="select" @toggle="toggle"></ratingselect>
           <div class="rating-wrapper">
-            <ul>
-              <li class="rating-item border-1px">
+            <ul v-show="food.ratings&&food.ratings.length">
+              <li class="rating-item border-1px" v-for="rating in food.ratings" v-show="needShow(rating.text,rating.rateType)">
                 <div class="user">
-                  <span class="name"></span>
-                  <img class="avatar" width="12" height="12">
+                  <span class="name">{{rating.username}}</span>
+                  <img class="avatar" width="12" height="12" :src="rating.avatar">
                 </div>
-                <div class="time"></div>
+                <div class="time">{{rating.rateTime}}</div>
                 <p class="text">
-                  <span></span>
+                	 <span :class="{'icon-thumb_up':rating.rateType===0,'icon-thumb_down':rating.rateType===1}"></span>
+                  {{rating.text}}
                 </p>
               </li>
             </ul>
@@ -104,6 +105,20 @@
 			addShow(){
 				this.$emit('add', event.target);
         Vue.set(this.food, 'count', 1);
+			},
+			select(type){
+				this.selectType=type;
+			},
+			toggle(content){
+				this.onlyContent=content;
+			},
+			needShow(text,type){
+				if (this.onlyContent&&!text) {
+					return false;
+				}else if(this.selectType!==type&&this.selectType!==ALL){
+					return false;
+				}
+				return true;
 			}
 		},
 		components:{
