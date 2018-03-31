@@ -63,7 +63,7 @@
   	import cartcontrol from 'components/cartcontrol/cartcontrol';
   	import split from 'components/split/split';
   	import ratingselect from 'components/ratingselect/ratingselect';
-  	import {formatDate} from 'common/js/date';
+  	import {format} from 'common/js/date';
   	const ALL = 2;
   	
 	export default{
@@ -126,7 +126,7 @@
 		filters: {
       formatDate(time) {
         let date = new Date(time);
-        return formatDate(date, 'yyyy-MM-dd hh:mm');
+        return format(date, 'yyyy-MM-dd hh:mm');
       }
     },
 		components:{
